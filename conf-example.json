@@ -1,0 +1,14 @@
+{
+    "help":"Copy this file to conf.json then you can delete this row",
+    "base_path":"~/docker/file",
+    "base_url": "http://localhost:8081/bot",
+    "token":"Your-Bot-Token",
+    "admins_chat_id": [
+        1457831771
+    ],
+    "instagram_username": "",
+    "instagram_password": "",
+    "use_local_server": true,
+    "use_proxy": false,
+    "proxy_url": ""
+}

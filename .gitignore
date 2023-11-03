@@ -1,0 +1,8 @@
+*.sqlite3
+__pycache__/
+conf.json
+.env/
+env/
+.venv/
+venv/
+instagram/
