@@ -1,4 +1,4 @@
-import asyncio
+import asyncio,os
 from email.headerregistry import ContentTypeHeader
 from requests_toolbelt import MultipartEncoder
 from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup
@@ -162,8 +162,13 @@ def between_callback(update,post,user_information):
                 try:
                     send_msg(chat_id ,var.user_can_not_upload_a_post(update.message.from_user.username, post['title'], post['body'], post['technical_tips'], tag_names, category_names,  request.text))
                 except Exception:pass
-        return
+        
     except Exception as e:
         print(e)
         send_msg(update.message.chat.id ,var.try_again_your_command_was_bad)
-
+    for media in post['medias']:
+        try:os.unlink(media['photo'])
+        except Exception as e:pass
+    if post['has_public_pack']:
+        try:os.unlink(post['public_pack']['pack'])
+        except Exception as e:pass
