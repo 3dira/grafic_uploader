@@ -93,7 +93,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                     package_name = Path(update.message.document.file_name).stem.replace("-", "").replace(
                         "_", "").replace(" ", "").lower()
 
-                    if not get_cnf(user_id, 'update') and post["medias"] and not package_name in post["caption"].replace("-",
+                    if not cnf and post["medias"] and not package_name in post["caption"].replace("-",
                                                                                                   "").replace(
                         "_", "").replace(
                         " ", "").lower():
