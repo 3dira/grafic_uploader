@@ -7,6 +7,7 @@ config = {}
 with open('conf.json', 'r') as f:
     config = json.load(f)
 
+group_blank_title_send = -1002125821324
 # Commands
 add_public_package = 'افزودن پکیج'
 do_not_have_description = 'توضیحات ندارم'
@@ -18,9 +19,14 @@ command_end_media = "اتمام عکس/فیلم"
 command_upload_post = "آپلود پست"
 command_end_tags = "اتمام تگ"
 command_end_categories = "اتمام دسته بندی"
+input_your_password = "پسوورد فایل"
 command_exit_user = "خروج از حساب کاربری"
 command_back_to_list_categories = "بازگشت"
 command_send_link_file = "ارسال لینک پست اینستاگرام"
+skip = "رد شو"
+
+pls_enter_your_password = "لطفا پسوورد فایل را وارد کنید:"
+password_was_set = "پسوورد فایل به {password} تغییر پیدا کرد."
 
 media_mode_keyboard_list = [
     [command_remove_post]
@@ -31,7 +37,13 @@ if config.get('use_instagram', False):
 default_keyboard = ReplyKeyboardMarkup(
     [[command_help, command_new_post], [command_exit_user]], resize_keyboard=True)
 media_mode_keyboard = ReplyKeyboardMarkup(
-    media_mode_keyboard_list, resize_keyboard=True,  one_time_keyboard=True)
+    media_mode_keyboard_list, resize_keyboard=True, one_time_keyboard=True)
+skip_keyboard = ReplyKeyboardMarkup(
+    [[skip], [command_remove_post]], resize_keyboard=True, one_time_keyboard=True
+)
+back_btn = ReplyKeyboardMarkup(
+    [[command_back_to_list_categories]], resize_keyboard=True, one_time_keyboard=True
+)
 upload_post_keyboard = ReplyKeyboardMarkup([
     [command_upload_post],
     [command_remove_post]
@@ -50,8 +62,8 @@ technical_tips_send_keyboard = ReplyKeyboardMarkup([
 
 def keyboard_select_child_categories(childs):
     return ReplyKeyboardMarkup([
-        [command_back_to_list_categories],
-    ]+childs, resize_keyboard=True)
+                                   [command_back_to_list_categories],
+                               ] + childs, resize_keyboard=True)
 
 
 help_text = """
@@ -100,7 +112,7 @@ select_your_tags = "لطفا تگ های مورد نظرتان را انتخاب
 send_your_post_title = "موضوع پست خودتان را ارسال کنید."
 send_your_package = "لطفا پکیج خودتان را بفرستید.\nفرمت های پشتیبانی شده: zip, rar, 7z"
 send_your_media_url = "لطفا لینک پست اینستاگرام خود را بفرستید."
-successfully_logged_in = "با موفقیت وارد حساب کاربری خود شدید.\n"+help_text
+successfully_logged_in = "با موفقیت وارد حساب کاربری خود شدید.\n" + help_text
 otp_is_not_correct = "کد وارد شده صحیح نمی باشد.\nلطفا کد را به لاتین وارد کنید."
 otp_timed_out = "زمان اعتبار کد به پایان رسیده است. لطفا کد ارسال شده جدید را وارد کنید."
 get_a_photo = "عکس با موفقیت دریافت شد ."
@@ -133,6 +145,8 @@ def user_deleted_a_post(username): return f"""
 
 کاربر @{username} می خواست پستی را آپلود کند اما منصرف شد و آن را حذف کرد.
 """
+
+
 def user_uploaded_a_post(username, title, body, technical_tips, tag_names, category_names): return f"""
 پیام مخصوص ادمین های بات
 
@@ -148,7 +162,8 @@ def user_uploaded_a_post(username, title, body, technical_tips, tag_names, categ
 """
 
 
-def user_can_not_upload_a_post(username, title, body, technical_tips, tag_names, category_names, response_text): return f"""
+def user_can_not_upload_a_post(username, title, body, technical_tips, tag_names, category_names,
+                               response_text): return f"""
 پیام مخصوص ادمین های بات
 
 کاربر @{username} می خواست پستی را آپلود کند اما موفق نشد.
@@ -167,8 +182,7 @@ def user_can_not_upload_a_post(username, title, body, technical_tips, tag_names,
 
 
 def your_post_was_not_uploaded(response):
-    return "پست شما آپلود نشد.\nریسپانس سرور بوملیا: "+response
-
+    return "پست شما آپلود نشد.\nریسپانس سرور بوملیا: " + response
 
 # add_public_package = "Add package"
 # do_not_have_description = "I do not have description"
