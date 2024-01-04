@@ -1,18 +1,21 @@
-import asyncio
-from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
+import os
 from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler
-from requests_toolbelt.multipart.encoder import MultipartEncoder
-import threading
+from controller import send_list_categories, categories, config
+from zipfile import ZipFile
+from platform import system
+from telegram import Update
 from pathlib import Path
+import controller
+import threading
+import asyncio
 import var
 import db
-import controller
-from controller import send_list_categories, tags, categories, config
-import asyncio
 import sys
 
 posts = []
 settings = {}
+use_proxy = system() == "Windows"
+def_path = config['local_path'] if use_proxy else config['base_path']
 
 
 def get_last_post(user_id):
@@ -51,16 +54,15 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             return
 
         status = await controller.check_user(user_id, update)
-        if status == 0:  return
+        if status == 0:
+            return
 
         if update.message.photo:
             post = get_last_post(user_id)
             if post and not post.get('complate'):
                 if not post['end_media']:
                     media = await update.message.photo[-1].get_file(read_timeout=60)
-
-                    media_path = config['base_path'] + '/' + media.file_path.split(
-                        '/')[0] + '/' + media.file_path.split('/')[-2] + '/' + media.file_path.split('/')[-1]
+                    media_path = os.path.join(*def_path, *media.file_path.split('/')[-2:])
 
                     caption_image_line = [x for x in update.message.caption.replace("  ", "\n").split("\n") if x]
 
@@ -87,10 +89,24 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             if post and post['has_public_pack']:
                 if not post['public_pack']:
                     package = await update.message.document.get_file(read_timeout=10000)
-                    package_path = config['base_path'] + '/' + package.file_path.split(
+                    print(config['base_path'], package.file_path)
+                    package_path = os.path.join(config['base_path']) + '/' + package.file_path.split(
                         '/')[0] + '/' + package.file_path.split('/')[-2] + '/' + package.file_path.split('/')[-1]
+                    print(package_path)
+                    package_path = os.path.join(*def_path, *package.file_path.split('/')[-2:])
+                    print(package_path)
+                    file_name = update.message.document.file_name
+                    mime_type = update.message.document.mime_type
+                    await package.download_to_drive(package_path)
+                    if not ('rar' in mime_type or 'zip' in mime_type):
+                        tmp_path = '.'.join(package_path.split('.')[:-1]) + '.zip'
+                        with ZipFile(tmp_path, 'w') as zip_object:
+                            zip_object.write(package_path)
+                        mime_type = "application/zip"
+                        os.remove(package_path)
+                        package_path = tmp_path
 
-                    package_name = Path(update.message.document.file_name).stem.replace("-", "").replace(
+                    package_name = Path(file_name).stem.replace("-", "").replace(
                         "_", "").replace(" ", "").lower()
 
                     if not cnf and post["medias"] and not package_name in post["caption"].replace("-",
@@ -115,8 +131,8 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
                     post['public_pack'] = {
                         "obj": package,
-                        'name': update.message.document.file_name,
-                        'pack': package_path, 'mime': update.message.document.mime_type
+                        'name': file_name,
+                        'pack': package_path, 'mime': mime_type
                     }
                     post['doc_msg_id'] = update.message.id
 
@@ -179,8 +195,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                 await update.message.reply_text(var.your_post_deleted_successfully, reply_markup=var.default_keyboard)
                 return
             if update.message.text == var.command_end_categories:
-                if (post['section'] == 'graphic' or post['section'] == 'گرافیک') and \
-                        len(post['categories']) == 0:
+                if post['section'] == 'graphic' and len(post['categories']) == 0:
                     await update.message.reply_text(var.you_should_select_a_category)
                     return
                 post['categories_complate'] = True
@@ -250,10 +265,13 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await update.message.reply_text(var.try_again_your_command_was_bad, reply_markup=var.default_keyboard)
 
 
-app = ApplicationBuilder().token(config['token'])
-
-if config['use_local_server']: app = app.base_url(config['base_url']).base_file_url("").local_mode(True)
-if config['use_proxy']:
+app = ApplicationBuilder().token(
+    "5924155705:AAEsCczzWsf4P8350O_C8owVZCaYbQltekg" if use_proxy else config['token']
+)
+print("Bot Is RUN !")
+if config['use_local_server'] and not use_proxy:
+    app = app.base_url(config['base_url']).base_file_url("").local_mode(True)
+if use_proxy:
     proxy_url = config['proxy_url']
     app = app.proxy_url(proxy_url).get_updates_proxy_url(proxy_url)
 
