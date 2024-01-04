@@ -101,7 +101,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                         os.remove(package_path)
                         package_path = tmp_path
 
-                    package_name = Path(os.path.basename(package_path)).stem.replace("-", "").replace(
+                    package_name = Path(file_name).stem.replace("-", "").replace(
                         "_", "").replace(" ", "").lower()
 
                     if not cnf and post["medias"] and not package_name in post["caption"].replace("-",

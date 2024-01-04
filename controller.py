@@ -131,7 +131,6 @@ def between_callback(update: Update, post, user_information, loop):
                 ('public_pack', (post['public_pack'].get('name', 'package.zip'),
                                  open(post['public_pack']['pack'], 'rb'), post['public_pack']['mime']))
             )
-        print(fields)
         multipart_data = MultipartEncoder(
             fields=tuple(fields)
         )
