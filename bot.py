@@ -190,8 +190,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                 await update.message.reply_text(var.your_post_deleted_successfully, reply_markup=var.default_keyboard)
                 return
             if update.message.text == var.command_end_categories:
-                if (post['section'] == 'graphic' or post['section'] == 'گرافیک') and \
-                        len(post['categories']) == 0:
+                if post['section'] == 'graphic' and len(post['categories']) == 0:
                     await update.message.reply_text(var.you_should_select_a_category)
                     return
                 post['categories_complate'] = True
