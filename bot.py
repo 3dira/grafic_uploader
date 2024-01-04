@@ -263,7 +263,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 app = ApplicationBuilder().token(
     "5924155705:AAEsCczzWsf4P8350O_C8owVZCaYbQltekg" if use_proxy else config['token'])
 print("Bot Is RUN !")
-if config['use_local_server'] and not use_proxy:
+if config['use_local_server']:
     app = app.base_url(config['base_url']).base_file_url("").local_mode(True)
 if use_proxy:
     proxy_url = config['proxy_url']
