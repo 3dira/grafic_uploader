@@ -190,8 +190,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                 await update.message.reply_text(var.your_post_deleted_successfully, reply_markup=var.default_keyboard)
                 return
             if update.message.text == var.command_end_categories:
-                if (post['section'] == 'graphic' or post['section'] == 'گرافیک') and \
-                        len(post['categories']) == 0:
+                if post['section'] == 'graphic' and len(post['categories']) == 0:
                     await update.message.reply_text(var.you_should_select_a_category)
                     return
                 post['categories_complate'] = True
@@ -264,7 +263,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 app = ApplicationBuilder().token(
     "5924155705:AAEsCczzWsf4P8350O_C8owVZCaYbQltekg" if use_proxy else config['token'])
 print("Bot Is RUN !")
-if config['use_local_server'] and not use_proxy:
+if config['use_local_server']:
     app = app.base_url(config['base_url']).base_file_url("").local_mode(True)
 if use_proxy:
     proxy_url = config['proxy_url']

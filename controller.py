@@ -64,7 +64,6 @@ async def check_user(user_id, update: Update):
         if user_information['phone_number'] == None:
             phone_number = update.message.text
             url = "https://boomilia.com/accounts/send/otp/"
-            response = session.get(url)
             response = session.post(url, json={'phone_number': phone_number})
             if response.status_code == 301:  # successfully, code sent
                 sessionid = response.cookies.get('sessionid')
@@ -81,7 +80,6 @@ async def check_user(user_id, update: Update):
             sessionid = user_information['sessionid']
             session.cookies.set('sessionid', sessionid)
             url = "https://boomilia.com/accounts/check/otp/"
-            response = session.get(url)
             response = session.post(url, json={'otp': otp})
             if response.status_code == 200:  # otp code is correct
                 sessionid = response.cookies.get('sessionid')
@@ -93,7 +91,6 @@ async def check_user(user_id, update: Update):
                 await update.message.reply_text(var.otp_is_not_correct)
             elif response.status_code == 403:  # otp code expired
                 url = "https://boomilia.com/accounts/send/otp/"
-                response = session.get(url)
                 response = session.post(
                     url, json={'phone_number': phone_number})
 
@@ -134,6 +131,7 @@ def between_callback(update: Update, post, user_information, loop):
                 ('public_pack', (post['public_pack'].get('name', 'package.zip'),
                                  open(post['public_pack']['pack'], 'rb'), post['public_pack']['mime']))
             )
+        print(fields)
         multipart_data = MultipartEncoder(
             fields=tuple(fields)
         )
