@@ -119,16 +119,6 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                         'pack': package_path, 'mime': update.message.document.mime_type
                     }
                     post['doc_msg_id'] = update.message.id
-                    category_select = controller.auto_category_select(post["caption"], post)
-                    if category_select:
-                        post['categories'].append(
-                            {'slug': str(category_select['slug']), 'name': category_select['name']})
-                        await update.message.reply_text(var.get_a_package, reply_to_message_id=update.message.id)
-                        await update.message.reply_text(
-                            f"دسته بندی هایی که به صورت اتوماتیک برای پست انتخاب شده اند : \n\n{category_select['name']}")
-
-                        await send_list_categories(update, post)
-                        return
 
                     await update.message.reply_text(var.get_a_package, reply_to_message_id=update.message.id)
                     await send_list_categories(update, post)
