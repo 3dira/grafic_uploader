@@ -2,13 +2,13 @@
     "token":"6195249981:AAFklutEXARcIfHNOQhGuSq6ar9arM17SeU",
     "base_path": ["home", "developer", "docker", "file"],
     "local_path": ["P:\\", "Python", "Telegram Bots", "Boomilia", "files"],
-    "base_url": "https://localhost:8081/bot",
+    "base_url": "http://localhost:8081/bot",
     "admins_chat_id": [
 	    1457831771,
 	    114078504
     ],
     "instagram_username": "vidcafe1cafe",
     "instagram_password": "mrmars86",
-    "use_local_server": false,
+    "use_local_server": true,
     "proxy_url": "http://127.0.0.1:1080"
 }
