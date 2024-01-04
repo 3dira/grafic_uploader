@@ -1,11 +1,12 @@
-from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup
-from requests_toolbelt import MultipartEncoder
-from deep_translator import GoogleTranslator
-import requests
-import json
-import var
 import os
+from deep_translator import GoogleTranslator
+from email.headerregistry import ContentTypeHeader
+from requests_toolbelt import MultipartEncoder
+from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup
 import db
+import var
+import json
+import requests
 import re
 
 # Get tags and categories from API
@@ -64,6 +65,7 @@ async def check_user(user_id, update: Update):
         if user_information['phone_number'] == None:
             phone_number = update.message.text
             url = "https://boomilia.com/accounts/send/otp/"
+            response = session.get(url)
             response = session.post(url, json={'phone_number': phone_number})
             if response.status_code == 301:  # successfully, code sent
                 sessionid = response.cookies.get('sessionid')
@@ -80,6 +82,7 @@ async def check_user(user_id, update: Update):
             sessionid = user_information['sessionid']
             session.cookies.set('sessionid', sessionid)
             url = "https://boomilia.com/accounts/check/otp/"
+            response = session.get(url)
             response = session.post(url, json={'otp': otp})
             if response.status_code == 200:  # otp code is correct
                 sessionid = response.cookies.get('sessionid')
@@ -91,6 +94,7 @@ async def check_user(user_id, update: Update):
                 await update.message.reply_text(var.otp_is_not_correct)
             elif response.status_code == 403:  # otp code expired
                 url = "https://boomilia.com/accounts/send/otp/"
+                response = session.get(url)
                 response = session.post(
                     url, json={'phone_number': phone_number})
 
@@ -131,14 +135,12 @@ def between_callback(update: Update, post, user_information, loop):
                 ('public_pack', (post['public_pack'].get('name', 'package.zip'),
                                  open(post['public_pack']['pack'], 'rb'), post['public_pack']['mime']))
             )
-        print(fields)
         multipart_data = MultipartEncoder(
             fields=tuple(fields)
         )
         url = 'https://boomilia.com/api/post/'
         request = session.post(url, data=multipart_data, headers={
             'Content-Type': multipart_data.content_type})
-        os.remove(post['public_pack']['pack'])
         tag_names = []
 
         post['complate'] = True
