@@ -2,7 +2,7 @@
     "token":"6195249981:AAFklutEXARcIfHNOQhGuSq6ar9arM17SeU",
     "base_path": ["home", "developer", "docker", "file"],
     "local_path": ["P:\\", "Python", "Telegram Bots", "Boomilia", "files"],
-    "base_url": "http://localhost:8081/bot",
+    "base_url": "https://localhost:8081/bot",
     "admins_chat_id": [
 	    1457831771,
 	    114078504
