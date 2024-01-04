@@ -91,7 +91,6 @@ async def check_user(user_id, update: Update):
                 await update.message.reply_text(var.otp_is_not_correct)
             elif response.status_code == 403:  # otp code expired
                 url = "https://boomilia.com/accounts/send/otp/"
-                response = session.get(url)
                 response = session.post(
                     url, json={'phone_number': phone_number})
 
