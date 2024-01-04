@@ -62,7 +62,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             if post and not post.get('complate'):
                 if not post['end_media']:
                     media = await update.message.photo[-1].get_file(read_timeout=60)
-                    media_path = os.path.join(*def_path, media.file_path.split('/')[0], *media.file_path.split('/')[-2:])
+                    media_path = os.path.join(*def_path, "https:", *media.file_path.split('/')[-2:])
                     caption_image_line = [x for x in update.message.caption.replace("  ", "\n").split("\n") if x]
 
                     hash = caption_image_line[0] if len(caption_image_line) >= 1 else "empty"
@@ -88,8 +88,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             if post and post['has_public_pack']:
                 if not post['public_pack']:
                     package = await update.message.document.get_file(read_timeout=10000)
-                    print(package.file_path.split('/'))
-                    package_path = os.path.join(*def_path, package.file_path.split('/')[1], *package.file_path.split('/')[-2:])
+                    package_path = os.path.join(*def_path, "https:", *package.file_path.split('/')[-2:])
                     print(package_path)
                     file_name = update.message.document.file_name
                     mime_type = update.message.document.mime_type
