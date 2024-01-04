@@ -62,8 +62,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             if post and not post.get('complate'):
                 if not post['end_media']:
                     media = await update.message.photo[-1].get_file(read_timeout=60)
-                    media_path = config['base_path'] + '/' + media.file_path.split(
-                        '/')[0] + '/' + media.file_path.split('/')[-2] + '/' + media.file_path.split('/')[-1]
+                    media_path = os.path.join(def_path, media.file_path.split('/')[0], media.file_path.split('/')[-2], media.file_path.split('/')[-1])
 
                     caption_image_line = [x for x in update.message.caption.replace("  ", "\n").split("\n") if x]
 
@@ -90,8 +89,8 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             if post and post['has_public_pack']:
                 if not post['public_pack']:
                     package = await update.message.document.get_file(read_timeout=10000)
-                    package_path = config['base_path'] + '/' + package.file_path.split(
-                        '/')[0] + '/' + package.file_path.split('/')[-2] + '/' + package.file_path.split('/')[-1]
+                    package_path = os.path.join(def_path, package.file_path.split('/')[0], package.file_path.split('/')[-2],
+                                              package.file_path.split('/')[-1])
                     file_name = update.message.document.file_name
                     mime_type = update.message.document.mime_type
                     if not ('rar' in mime_type or 'zip' in mime_type):
