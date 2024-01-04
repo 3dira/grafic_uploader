@@ -126,7 +126,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
                     post['public_pack'] = {
                         "obj": package,
-                        'name': file_name,
+                        'name': os.path.basename(package_path),
                         'pack': package_path, 'mime': mime_type
                     }
                     post['doc_msg_id'] = update.message.id
