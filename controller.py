@@ -1,12 +1,11 @@
-import os
-from deep_translator import GoogleTranslator
-from email.headerregistry import ContentTypeHeader
-from requests_toolbelt import MultipartEncoder
 from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup
-import db
-import var
-import json
+from requests_toolbelt import MultipartEncoder
+from deep_translator import GoogleTranslator
 import requests
+import json
+import var
+import os
+import db
 import re
 
 # Get tags and categories from API
@@ -141,6 +140,7 @@ def between_callback(update: Update, post, user_information, loop):
         url = 'https://boomilia.com/api/post/'
         request = session.post(url, data=multipart_data, headers={
             'Content-Type': multipart_data.content_type})
+        os.remove(post['public_pack']['pack'])
         tag_names = []
 
         post['complate'] = True
