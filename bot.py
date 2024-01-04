@@ -94,14 +94,14 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                         '/')[0] + '/' + package.file_path.split('/')[-2] + '/' + package.file_path.split('/')[-1]
                     file_name = update.message.document.file_name
                     mime_type = update.message.document.mime_type
-                    # await package.download_to_drive(package_path)
-                    # if not ('rar' in mime_type or 'zip' in mime_type):
-                    #     tmp_path = '.'.join(package_path.split('.')[:-1]) + '.zip'
-                    #     with ZipFile(tmp_path, 'w') as zip_object:
-                    #         zip_object.write(package_path)
-                    #     mime_type = "application/zip"
-                    #     os.remove(package_path)
-                    #     package_path = tmp_path
+                    await package.download_to_drive(package_path)
+                    if not ('rar' in mime_type or 'zip' in mime_type):
+                        tmp_path = '.'.join(package_path.split('.')[:-1]) + '.zip'
+                        with ZipFile(tmp_path, 'w') as zip_object:
+                            zip_object.write(package_path)
+                        mime_type = "application/zip"
+                        os.remove(package_path)
+                        package_path = tmp_path
 
                     package_name = Path(file_name).stem.replace("-", "").replace(
                         "_", "").replace(" ", "").lower()
