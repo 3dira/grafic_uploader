@@ -89,12 +89,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             if post and post['has_public_pack']:
                 if not post['public_pack']:
                     package = await update.message.document.get_file(read_timeout=10000)
-                    print(config['base_path'], package.file_path)
-                    package_path = os.path.join(config['base_path']) + '/' + package.file_path.split(
-                        '/')[0] + '/' + package.file_path.split('/')[-2] + '/' + package.file_path.split('/')[-1]
-                    print(package_path)
                     package_path = os.path.join(*def_path, *package.file_path.split('/')[-2:])
-                    print(package_path)
                     file_name = update.message.document.file_name
                     mime_type = update.message.document.mime_type
                     await package.download_to_drive(package_path)
