@@ -9,6 +9,6 @@
     ],
     "instagram_username": "vidcafe1cafe",
     "instagram_password": "mrmars86",
-    "use_local_server": true,
+    "use_local_server": false,
     "proxy_url": "http://127.0.0.1:1080"
 }
