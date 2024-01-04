@@ -15,7 +15,6 @@ import sys
 posts = []
 settings = {}
 use_proxy = system() == "Windows"
-print(use_proxy)
 def_path = config['local_path'] if use_proxy else config['base_path']
 
 
@@ -262,7 +261,8 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
 
 app = ApplicationBuilder().token(
-    "5924155705:AAEsCczzWsf4P8350O_C8owVZCaYbQltekg" if use_proxy else config['token'])
+    "5924155705:AAEsCczzWsf4P8350O_C8owVZCaYbQltekg" if use_proxy else config['token']
+)
 print("Bot Is RUN !")
 # if config['use_local_server']:
 #     app = app.base_url(config['base_url']).base_file_url("").local_mode(True)
