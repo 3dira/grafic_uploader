@@ -265,8 +265,10 @@ app = ApplicationBuilder().token(
 )
 print("Bot Is RUN !")
 if config['use_local_server'] and not use_proxy:
+    print('AAAA')
     app = app.base_url(config['base_url']).base_file_url("").local_mode(True)
 if use_proxy:
+    print("AAfAA")
     proxy_url = config['proxy_url']
     app = app.proxy_url(proxy_url).get_updates_proxy_url(proxy_url)
 
