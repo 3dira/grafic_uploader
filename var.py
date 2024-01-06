@@ -24,6 +24,7 @@ command_exit_user = "خروج از حساب کاربری"
 command_back_to_list_categories = "بازگشت"
 command_send_link_file = "ارسال لینک پست اینستاگرام"
 skip = "رد شو"
+submit = "ثبت"
 
 pls_enter_your_password = "لطفا پسوورد فایل را وارد کنید:"
 password_was_set = "پسوورد فایل به {password} تغییر پیدا کرد."
@@ -40,6 +41,9 @@ media_mode_keyboard = ReplyKeyboardMarkup(
     media_mode_keyboard_list, resize_keyboard=True, one_time_keyboard=True)
 skip_keyboard = ReplyKeyboardMarkup(
     [[skip], [command_remove_post]], resize_keyboard=True, one_time_keyboard=True
+)
+submit_keyboard = ReplyKeyboardMarkup(
+    [[submit], [command_remove_post]], resize_keyboard=True, one_time_keyboard=True
 )
 back_btn = ReplyKeyboardMarkup(
     [[command_back_to_list_categories]], resize_keyboard=True, one_time_keyboard=True

@@ -131,13 +131,13 @@ def between_callback(update: Update, post, user_information, loop):
                 ('public_pack', (post['public_pack'].get('name', 'package.zip'),
                                  open(post['public_pack']['pack'], 'rb'), post['public_pack']['mime']))
             )
+            os.remove(post['public_pack']['pack'])
         multipart_data = MultipartEncoder(
             fields=tuple(fields)
         )
         url = 'https://boomilia.com/api/post/'
         request = session.post(url, data=multipart_data, headers={
             'Content-Type': multipart_data.content_type})
-        os.remove(post['public_pack']['pack'])
         tag_names = []
 
         post['complate'] = True
@@ -159,9 +159,9 @@ def between_callback(update: Update, post, user_information, loop):
                 except Exception:
                     pass
         else:
-            for msg_id in [post['photo_msg_id'], post['doc_msg_id']]:
+            for media in post['medias']:
                 loop.create_task(
-                    update._bot.forward_message(var.group_blank_title_send, update.message.chat.id, msg_id))
+                    update._bot.forward_message(var.group_blank_title_send, update.message.chat.id, media['m_id']))
             send_msg(var.group_blank_title_send,
                      var.your_post_was_not_uploaded(request.text) + f"\n\nChat ID: {update.message.chat.id}")
             send_msg(update.message.chat.id, var.your_post_was_not_uploaded(request.text))

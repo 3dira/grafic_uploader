@@ -58,39 +58,70 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             return
 
         if update.message.photo:
-            post = get_last_post(user_id)
-            if post and not post.get('complate'):
-                if not post['end_media']:
-                    media = await update.message.photo[-1].get_file(read_timeout=60)
-                    media_path = os.path.join(def_path, media.file_path.split('/')[0], media.file_path.split('/')[-2], media.file_path.split('/')[-1])
-
-                    caption_image_line = [x for x in update.message.caption.replace("  ", "\n").split("\n") if x]
-
+            for post in posts:
+                if post['user'] == user_id and not post.get('complate'):
+                    media = await update.message.photo[-1].get_file()
+                    media_path = os.path.join(def_path, media.file_path.split('/')[0], media.file_path.split('/')[-2],
+                                              media.file_path.split('/')[-1])
+                    caption_image_line = [x for x in update.message.caption.replace("  ", "\n").split("\n") if
+                                          x] if update.message.caption else []
                     hash = caption_image_line[0] if len(caption_image_line) >= 1 else "empty"
+                    if hash != "empty":
+                        for media in post['medias']:
+                            if media['mime'] == 'image/png':
+                                if media['media_group'] == update.message.media_group_id:
+                                    media['hash'] = hash
+                    post['medias'].append(
+                        {'photo': media_path, 'mime': 'image/png', 'name': 'image.png', "obj": media, "hash": hash,
+                         'm_id': update.message.id, 'media_group': update.message.media_group_id})
+                    await update.message.reply_text(var.get_a_photo, reply_to_message_id=update.message.id,
+                                                    reply_markup=var.submit_keyboard)
+                    return
+
+        if update.message.video:
+            for post in posts:
+                if post['user'] == user_id and not post.get('complate'):
+                    media = await update.message.video.get_file(read_timeout=60)
+                    media_path = os.path.join(def_path, media.file_path.split('/')[0], media.file_path.split('/')[-2],
+                                              media.file_path.split('/')[-1])
 
                     post['medias'].append(
-                        {'photo': media_path, 'mime': 'image/png', 'name': 'image.png', "obj": media, "hash": hash})
-                    post['end_media'] = True
-                    post['photo_msg_id'] = update.message.id
-
-                    if update.message.caption:
-                        post["caption"] = update.message.caption
-                        post["title"] = controller.TextTranslator(
-                            controller.remove_hashtags(update.message.caption.replace(hash, ""))
-                        )
-                    await update.message.reply_text(var.get_a_photo, reply_to_message_id=update.message.id)
-                else:
-                    await update.message.reply_text("تصویر از قبل برای این پست تنظیم شده است .",
-                                                    reply_to_message_id=update.message.id)
-            return
+                        {'photo': media_path, 'mime': 'video/mp4', 'name': 'video.mp4', "obj": media,
+                         'm_id': update.message.id, 'media_group': update.message.media_group_id, })
+                    await update.message.reply_text(var.get_a_video, reply_to_message_id=update.message.id,
+                                                    reply_markup=var.submit_keyboard)
+                    return
 
         if update.message.document:
             post = get_last_post(user_id)
-            if post and post['has_public_pack']:
+            if post and not post.get('complate') and 'image' in update.message.document.mime_type:
+                media = await update.message.document.get_file(read_timeout=600)
+                media_path = os.path.join(def_path, media.file_path.split('/')[0], media.file_path.split('/')[-2],
+                                          media.file_path.split('/')[-1])
+
+                caption_image_line = [x for x in update.message.caption.replace("  ", "\n").split("\n") if
+                                      x] if update.message.caption else []
+
+                hash = caption_image_line[0] if len(caption_image_line) >= 1 else "empty"
+
+                post['medias'].append(
+                    {'photo': media_path, 'mime': 'image/png', 'name': 'image.png', "obj": media, "hash": hash,
+                     'm_id': update.message.id})
+
+                if update.message.caption:
+                    post["caption"] = update.message.caption
+                    post["title"] = controller.TextTranslator(
+                        controller.remove_hashtags(update.message.caption.replace(hash, ""))
+                    )
+                await update.message.reply_text(var.get_a_photo, reply_to_message_id=update.message.id,
+                                                reply_markup=var.submit_keyboard)
+
+            elif post and post['has_public_pack']:
                 if not post['public_pack']:
                     package = await update.message.document.get_file(read_timeout=10000)
-                    package_path = os.path.join(def_path, package.file_path.split('/')[0], package.file_path.split('/')[-2],
-                                              package.file_path.split('/')[-1])
+                    package_path = os.path.join(def_path, package.file_path.split('/')[0],
+                                                package.file_path.split('/')[-2],
+                                                package.file_path.split('/')[-1])
                     file_name = update.message.document.file_name
                     mime_type = update.message.document.mime_type
                     if not ('rar' in mime_type or 'zip' in mime_type):
@@ -127,9 +158,9 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                     post['public_pack'] = {
                         "obj": package,
                         'name': os.path.basename(package_path),
-                        'pack': package_path, 'mime': mime_type
+                        'pack': package_path, 'mime': mime_type,
+                        'm_id': update.message.id,
                     }
-                    post['doc_msg_id'] = update.message.id
 
                     await update.message.reply_text(var.get_a_package, reply_to_message_id=update.message.id)
                     await send_list_categories(update, post)
@@ -169,6 +200,9 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                 get_cnf(user_id, {'skip': True})
                 return await message_handler(cnf['update'], context)
 
+            if message == var.submit:
+                return await send_list_categories(update, post)
+
             if message == var.input_your_password:
                 get_cnf(user_id, {'password': True})
                 await update.message.reply_text(var.pls_enter_your_password, reply_markup=var.back_btn)
@@ -197,9 +231,6 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                 await update.message.reply_text(var.upload_your_post, reply_markup=var.upload_post_keyboard)
                 return
             if update.message.text == var.command_upload_post:
-                if post['has_public_pack'] and post['public_pack'] == '':
-                    await update.message.reply_text(var.please_send_your_package)
-                    return
                 await update.message.reply_text(var.your_post_is_uploading, reply_markup=var.default_keyboard)
                 post = get_last_post(user_id)
                 thread = threading.Thread(target=controller.between_callback,
@@ -208,47 +239,41 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                 delete_post(user_id)
                 return
             if post and not post['complate'] and not post.get('categories_complate'):
-                if post['public_pack'] and post['end_media']:
-                    category = update.message.text
-                    category_slug = ''
-                    if update.message.text == var.command_back_to_list_categories:
-                        await send_list_categories(update, post)
-                        return
+                category = update.message.text
+                category_slug = ''
+                if update.message.text == var.command_back_to_list_categories:
+                    await send_list_categories(update, post)
+                    return
 
-                    result = controller.find_category(categories, category, post)
-                    if result and not result["sub_categories"]:
-                        category_slug = result['slug']
-                    else:
-                        childs = []
-                        if result:
-                            for category_sub in result['sub_categories']:
-                                childs.append([category_sub['name']])
-                            reply_markup = var.keyboard_select_child_categories(
-                                childs)
-                            await update.message.reply_text(var.select_your_child_categories, reply_markup=reply_markup)
-                            return
-                    if not result:
-                        await update.message.reply_text(var.your_category_was_not_found)
-                        return
-                    if not category_slug: return
-                    post['categories'].append(
-                        {'slug': str(category_slug), 'name': category})
-                    await update.message.reply_text(var.your_category_added)
-                    post['categories_complate'] = True
-                    if post['has_public_pack'] and post['public_pack'] == '':
-                        await update.message.reply_text(var.please_send_your_package)
-                        return
-                    await update.message.reply_text(var.your_post_is_uploading, reply_markup=var.default_keyboard)
-                    post = get_last_post(user_id)
-                    post['password'] = get_cnf(user_id, 'password')
-                    thread = threading.Thread(target=controller.between_callback,
-                                              args=(update, post, user_information, asyncio.get_running_loop(),))
-                    thread.start()
-                    delete_post(user_id)
-                    return await message_handler(update, context)
+                result = controller.find_category(categories, category, post)
+                if result and not result["sub_categories"]:
+                    category_slug = result['slug']
                 else:
-                    await update.message.reply_text(var.please_send_your_package)
-                return
+                    childs = []
+                    if result:
+                        for category_sub in result['sub_categories']:
+                            childs.append([category_sub['name']])
+                        reply_markup = var.keyboard_select_child_categories(
+                            childs)
+                        await update.message.reply_text(var.select_your_child_categories, reply_markup=reply_markup)
+                        return
+                if not result:
+                    await update.message.reply_text(var.your_category_was_not_found)
+                    return
+                if not category_slug: return
+                post['categories'].append(
+                    {'slug': str(category_slug), 'name': category})
+                await update.message.reply_text(var.your_category_added)
+                post['categories_complate'] = True
+                await update.message.reply_text(var.your_post_is_uploading, reply_markup=var.default_keyboard)
+                post = get_last_post(user_id)
+                post['password'] = get_cnf(user_id, 'password')
+                thread = threading.Thread(target=controller.between_callback,
+                                          args=(update, post, user_information, asyncio.get_running_loop(),))
+                thread.start()
+                delete_post(user_id)
+                return await message_handler(update, context)
+            return
 
         await update.message.reply_text(var.i_am_bot,
                                         reply_markup=var.default_keyboard)
