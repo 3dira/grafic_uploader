@@ -19,8 +19,9 @@ def_path = config['local_path'] if use_proxy else config['base_path']
 
 
 def get_last_post(user_id):
-    for post in reversed(posts):
-        if post['user'] == user_id: return post
+    if posts:
+        for post in reversed(posts):
+            if post['user'] == user_id: return post
     return {}
 
 
