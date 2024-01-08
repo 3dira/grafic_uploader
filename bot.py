@@ -95,7 +95,8 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
         if update.message.document:
             post = get_last_post(user_id)
-            if post and not post.get('complate') and 'image' in update.message.document.mime_type:
+            mime_type = update.message.document.mime_type
+            if post and not post.get('complate') and (mime_type and 'image' in mime_type):
                 media = await update.message.document.get_file(read_timeout=600)
                 media_path = os.path.join(def_path, media.file_path.split('/')[0], media.file_path.split('/')[-2],
                                           media.file_path.split('/')[-1])
@@ -124,8 +125,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                                                 package.file_path.split('/')[-2],
                                                 package.file_path.split('/')[-1])
                     file_name = update.message.document.file_name
-                    mime_type = update.message.document.mime_type
-                    if not ('rar' in mime_type or 'zip' in mime_type):
+                    if not (mime_type and ('rar' in mime_type or 'zip' in mime_type)):
                         tmp_path = '.'.join(package_path.split('.')[:-1]) + '.zip'
                         with ZipFile(tmp_path, 'w') as zip_object:
                             zip_object.write(package_path, os.path.basename(package_path))
