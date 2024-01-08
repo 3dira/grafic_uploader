@@ -179,7 +179,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                               'end_media': False,
                               'send_link': False,
                               'title': 'empty',
-                              'tags': [{'id': str(7), 'name': "گرافیک"}],
+                              'tags': [{'id': str(18), 'name': "گرافیک"}],
                               'tags_complate': True,
                               'categories': [],
                               'categories_complate': False,
