@@ -127,7 +127,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                     if not ('rar' in mime_type or 'zip' in mime_type):
                         tmp_path = '.'.join(package_path.split('.')[:-1]) + '.zip'
                         with ZipFile(tmp_path, 'w') as zip_object:
-                            zip_object.write(package_path)
+                            zip_object.write(package_path, os.path.basename(tmp_path))
                         mime_type = "application/zip"
                         os.remove(package_path)
                         package_path = tmp_path
