@@ -189,7 +189,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                               'technical_tips': '',
                               'has_body': False,
                               'has_technical_tips': False,
-                              'section': "گرافیک",
+                              'section': "graphic",
                               })
                 await update.message.reply_text(var.send_your_media, reply_markup=var.media_mode_keyboard)
                 return
@@ -224,8 +224,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                 await update.message.reply_text(var.your_post_deleted_successfully, reply_markup=var.default_keyboard)
                 return
             if update.message.text == var.command_end_categories:
-                print(post['section'], len(post['categories']))
-                if post['section'] == 'گرافیک' and len(post['categories']) == 0:
+                if post['section'] == 'graphic' and len(post['categories']) == 0:
                     await update.message.reply_text(var.you_should_select_a_category)
                     return
                 post['categories_complate'] = True
