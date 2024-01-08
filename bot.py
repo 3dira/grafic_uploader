@@ -116,7 +116,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                 await update.message.reply_text(var.get_a_photo, reply_to_message_id=update.message.id,
                                                 reply_markup=var.submit_keyboard)
 
-            elif post and post['has_public_pack']:
+            elif post and post.get('has_public_pack'):
                 if not post['public_pack']:
                     package = await update.message.document.get_file(read_timeout=10000)
                     package_path = os.path.join(def_path, package.file_path.split('/')[0],
